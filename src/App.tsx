@@ -198,21 +198,50 @@ function App() {
     [song]
   );
 
-  // Keyboard shortcut: space to play/pause
+  // Keyboard shortcuts
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.code === "Space" && song) {
-        e.preventDefault();
-        if (isPlaying) {
-          handlePause();
-        } else {
-          handlePlay();
-        }
+      if (!song) return;
+
+      switch (e.code) {
+        case "Space":
+          e.preventDefault();
+          isPlaying ? handlePause() : handlePlay();
+          break;
+        case "BracketLeft":
+          e.preventDefault();
+          handleSetA();
+          break;
+        case "BracketRight":
+          e.preventDefault();
+          handleSetB();
+          break;
+        case "Escape":
+          handleClearLoop();
+          break;
+        case "ArrowLeft":
+          if (e.shiftKey) {
+            e.preventDefault();
+            handleJumpToSection(Math.max(0, currentSectionIndex - 1));
+          }
+          break;
+        case "ArrowRight":
+          if (e.shiftKey) {
+            e.preventDefault();
+            handleJumpToSection(Math.min(sections.length - 1, currentSectionIndex + 1));
+          }
+          break;
+        case "KeyL":
+          if (e.shiftKey) {
+            e.preventDefault();
+            handleMarkLearned(currentSectionIndex);
+          }
+          break;
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [song, isPlaying, handlePlay, handlePause]);
+  }, [song, isPlaying, handlePlay, handlePause, handleSetA, handleSetB, handleClearLoop, handleJumpToSection, handleMarkLearned, currentSectionIndex, sections.length]);
 
   // Update current time, auto-loop, practice time tracking
   useEffect(() => {
