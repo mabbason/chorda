@@ -1,0 +1,74 @@
+import { useRef, useEffect, useCallback } from "react";
+import type { Song } from "../models/song";
+import { render } from "../renderer/waterfall-renderer";
+
+interface Props {
+  song: Song;
+  getCurrentTime: () => number;
+  getState: () => string;
+  visibleHands: Set<string>;
+}
+
+export function WaterfallCanvas({ song, getCurrentTime, getState, visibleHands }: Props) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const rafRef = useRef<number>(0);
+
+  const resizeCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = Math.round(rect.width * dpr);
+    canvas.height = Math.round(rect.height * dpr);
+
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      ctx.scale(dpr, dpr);
+    }
+  }, []);
+
+  useEffect(() => {
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+    return () => window.removeEventListener("resize", resizeCanvas);
+  }, [resizeCanvas]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const dpr = window.devicePixelRatio || 1;
+
+    const loop = () => {
+      const currentTime = getCurrentTime();
+
+      // Use logical dimensions for rendering (before DPR scaling)
+      const logicalWidth = canvas.width / dpr;
+      const logicalHeight = canvas.height / dpr;
+
+      // Create a virtual canvas size object for the renderer
+      const virtualCanvas = {
+        width: logicalWidth,
+        height: logicalHeight,
+      } as HTMLCanvasElement;
+
+      render(ctx, virtualCanvas, song, currentTime, visibleHands);
+      rafRef.current = requestAnimationFrame(loop);
+    };
+
+    rafRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [song, getCurrentTime, getState, visibleHands]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="w-full h-full block"
+      style={{ background: "#0f172a" }}
+    />
+  );
+}
