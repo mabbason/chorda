@@ -5,6 +5,8 @@ import { usePlayback } from "./hooks/usePlayback";
 import { WaterfallCanvas } from "./components/WaterfallCanvas";
 import { FileLoader } from "./components/FileLoader";
 import { Controls } from "./components/Controls";
+import { snapToMeasure, buildLoopRange } from "./utils/loop";
+import type { LoopRange } from "./utils/loop";
 
 function App() {
   const [song, setSong] = useState<Song | null>(null);
@@ -15,6 +17,8 @@ function App() {
   const [visibleHands, setVisibleHands] = useState<Set<string>>(
     () => new Set(["left", "right", "unknown"])
   );
+  const [loop, setLoop] = useState<LoopRange | null>(null);
+  const [loopAMeasure, setLoopAMeasure] = useState<number | null>(null);
   const rafRef = useRef<number>(0);
 
   const playback = usePlayback(song);
@@ -31,6 +35,8 @@ function App() {
       setIsFinished(false);
       setCurrentTime(0);
       setSpeed(1);
+      setLoop(null);
+      setLoopAMeasure(null);
     },
     []
   );
@@ -77,6 +83,8 @@ function App() {
     setIsFinished(false);
     setCurrentTime(0);
     setSpeed(1);
+    setLoop(null);
+    setLoopAMeasure(null);
   }, [playback]);
 
   const handleToggleHand = useCallback((hand: string) => {
@@ -89,6 +97,35 @@ function App() {
       }
       return next;
     });
+  }, []);
+
+  const handleSetA = useCallback(() => {
+    if (!song) return;
+    const time = playback.getCurrentTime();
+    const measure = snapToMeasure(time, song.measures);
+    setLoopAMeasure(measure);
+    // If B was already set and A > old B, clear the loop
+    setLoop(null);
+  }, [song, playback]);
+
+  const handleSetB = useCallback(() => {
+    if (!song || loopAMeasure === null) return;
+    const time = playback.getCurrentTime();
+    let bMeasure = snapToMeasure(time, song.measures);
+    // Ensure B >= A
+    if (bMeasure < loopAMeasure) bMeasure = loopAMeasure;
+    const range = buildLoopRange(loopAMeasure, bMeasure, song.measures);
+    if (range) {
+      setLoop(range);
+      // Seek to loop start
+      playback.seek(range.startSec);
+      setCurrentTime(range.startSec);
+    }
+  }, [song, loopAMeasure, playback]);
+
+  const handleClearLoop = useCallback(() => {
+    setLoop(null);
+    setLoopAMeasure(null);
   }, []);
 
   // Keyboard shortcut: space to play/pause
@@ -107,13 +144,18 @@ function App() {
     return () => window.removeEventListener("keydown", handler);
   }, [song, isPlaying, handlePlay, handlePause]);
 
-  // Update current time display from transport
+  // Update current time display from transport + auto-loop
   useEffect(() => {
     const update = () => {
       if (song) {
         const time = playback.getCurrentTime();
         setCurrentTime(time);
-        if (time >= song.durationSec && isPlaying) {
+
+        // Auto-loop: seek back to A when reaching B
+        if (loop && isPlaying && time >= loop.endSec) {
+          playback.seek(loop.startSec);
+          setCurrentTime(loop.startSec);
+        } else if (time >= song.durationSec && isPlaying) {
           playback.pause();
           setIsPlaying(false);
           setIsFinished(true);
@@ -123,7 +165,7 @@ function App() {
     };
     rafRef.current = requestAnimationFrame(update);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [song, playback, isPlaying]);
+  }, [song, playback, isPlaying, loop]);
 
   if (!song) {
     return (
@@ -142,6 +184,8 @@ function App() {
         duration={song.durationSec}
         speed={speed}
         visibleHands={visibleHands}
+        loop={loop}
+        loopAMeasure={loopAMeasure}
         onPlay={handlePlay}
         onPause={handlePause}
         onStop={handleStop}
@@ -149,6 +193,9 @@ function App() {
         onSeek={handleSeek}
         onBack={handleBack}
         onToggleHand={handleToggleHand}
+        onSetA={handleSetA}
+        onSetB={handleSetB}
+        onClearLoop={handleClearLoop}
       />
       <div className="flex-1 overflow-hidden relative">
         <WaterfallCanvas
@@ -156,6 +203,7 @@ function App() {
           getCurrentTime={playback.getCurrentTime}
           getState={playback.getState}
           visibleHands={visibleHands}
+          loop={loop}
         />
         {isFinished && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/50">

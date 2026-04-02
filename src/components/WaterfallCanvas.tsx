@@ -1,5 +1,6 @@
 import { useRef, useEffect, useCallback } from "react";
 import type { Song } from "../models/song";
+import type { LoopRange } from "../utils/loop";
 import { render } from "../renderer/waterfall-renderer";
 
 interface Props {
@@ -7,9 +8,10 @@ interface Props {
   getCurrentTime: () => number;
   getState: () => string;
   visibleHands: Set<string>;
+  loop: LoopRange | null;
 }
 
-export function WaterfallCanvas({ song, getCurrentTime, getState, visibleHands }: Props) {
+export function WaterfallCanvas({ song, getCurrentTime, getState, visibleHands, loop }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
 
@@ -43,26 +45,24 @@ export function WaterfallCanvas({ song, getCurrentTime, getState, visibleHands }
 
     const dpr = window.devicePixelRatio || 1;
 
-    const loop = () => {
+    const animate = () => {
       const currentTime = getCurrentTime();
 
-      // Use logical dimensions for rendering (before DPR scaling)
       const logicalWidth = canvas.width / dpr;
       const logicalHeight = canvas.height / dpr;
 
-      // Create a virtual canvas size object for the renderer
       const virtualCanvas = {
         width: logicalWidth,
         height: logicalHeight,
       } as HTMLCanvasElement;
 
-      render(ctx, virtualCanvas, song, currentTime, visibleHands);
-      rafRef.current = requestAnimationFrame(loop);
+      render(ctx, virtualCanvas, song, currentTime, visibleHands, loop);
+      rafRef.current = requestAnimationFrame(animate);
     };
 
-    rafRef.current = requestAnimationFrame(loop);
+    rafRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [song, getCurrentTime, getState, visibleHands]);
+  }, [song, getCurrentTime, getState, visibleHands, loop]);
 
   return (
     <canvas

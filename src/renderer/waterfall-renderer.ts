@@ -1,4 +1,5 @@
 import type { Song } from "../models/song";
+import type { LoopRange } from "../utils/loop";
 
 const KEYBOARD_HEIGHT = 112;
 const VIEWPORT_AHEAD_SEC = 4;
@@ -212,12 +213,61 @@ function drawSectionDividers(
 let cachedRange: KeyboardRange | null = null;
 let cachedSongTitle: string = "";
 
+function drawLoopRegion(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  waterfallHeight: number,
+  currentTimeSec: number,
+  pixelsPerSec: number,
+  loop: LoopRange
+) {
+  const startDelta = loop.startSec - currentTimeSec;
+  const endDelta = loop.endSec - currentTimeSec;
+
+  // Only draw if visible
+  if (endDelta < -VIEWPORT_BEHIND_SEC || startDelta > VIEWPORT_AHEAD_SEC) return;
+
+  const startY = waterfallHeight - (endDelta + VIEWPORT_BEHIND_SEC) * pixelsPerSec;
+  const endY = waterfallHeight - (startDelta + VIEWPORT_BEHIND_SEC) * pixelsPerSec;
+
+  // Dim everything outside the loop region
+  ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+  if (startY > 0) {
+    ctx.fillRect(0, 0, width, Math.max(0, startY));
+  }
+  if (endY < waterfallHeight) {
+    ctx.fillRect(0, endY, width, waterfallHeight - endY);
+  }
+
+  // Draw loop boundary lines
+  ctx.strokeStyle = "#f59e0b";
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 3]);
+
+  if (startY > 0 && startY < waterfallHeight) {
+    ctx.beginPath();
+    ctx.moveTo(0, startY);
+    ctx.lineTo(width, startY);
+    ctx.stroke();
+  }
+  if (endY > 0 && endY < waterfallHeight) {
+    ctx.beginPath();
+    ctx.moveTo(0, endY);
+    ctx.lineTo(width, endY);
+    ctx.stroke();
+  }
+
+  ctx.setLineDash([]);
+  ctx.lineWidth = 1;
+}
+
 export function render(
   ctx: CanvasRenderingContext2D,
   canvas: HTMLCanvasElement,
   song: Song,
   currentTimeSec: number,
-  visibleHands: Set<string>
+  visibleHands: Set<string>,
+  loop?: LoopRange | null
 ) {
   const { width, height } = canvas;
 
@@ -308,6 +358,11 @@ export function render(
       ctx.globalAlpha = 1.0;
       ctx.shadowBlur = 0;
     }
+  }
+
+  // Draw loop region overlay (inside clip)
+  if (loop) {
+    drawLoopRegion(ctx, width, waterfallHeight, currentTimeSec, pixelsPerSec, loop);
   }
 
   // Restore clipping (waterfall area only -> full canvas)

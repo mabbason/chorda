@@ -1,3 +1,5 @@
+import type { LoopRange } from "../utils/loop";
+
 interface Props {
   isPlaying: boolean;
   songTitle: string;
@@ -5,6 +7,8 @@ interface Props {
   duration: number;
   speed: number;
   visibleHands: Set<string>;
+  loop: LoopRange | null;
+  loopAMeasure: number | null;
   onPlay: () => void;
   onPause: () => void;
   onStop: () => void;
@@ -12,6 +16,9 @@ interface Props {
   onSeek: (time: number) => void;
   onBack: () => void;
   onToggleHand: (hand: string) => void;
+  onSetA: () => void;
+  onSetB: () => void;
+  onClearLoop: () => void;
 }
 
 function formatTime(sec: number): string {
@@ -59,6 +66,11 @@ export function Controls({
   onBack,
   visibleHands,
   onToggleHand,
+  loop,
+  loopAMeasure,
+  onSetA,
+  onSetB,
+  onClearLoop,
 }: Props) {
   return (
     <div className="flex items-center gap-3 px-4 py-2 bg-slate-800 border-b border-slate-700">
@@ -135,6 +147,48 @@ export function Controls({
             </button>
           );
         })}
+      </div>
+
+      <div className="flex items-center gap-1.5">
+        <button
+          onClick={onSetA}
+          className={`px-2 py-1 rounded text-xs font-medium ${
+            loopAMeasure !== null && !loop
+              ? "bg-amber-600 text-white"
+              : "bg-slate-700 text-slate-300 hover:bg-slate-600"
+          }`}
+          title="Set loop start at current position"
+        >
+          A
+        </button>
+        <button
+          onClick={onSetB}
+          disabled={loopAMeasure === null}
+          className={`px-2 py-1 rounded text-xs font-medium ${
+            loop
+              ? "bg-amber-600 text-white"
+              : loopAMeasure !== null
+                ? "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                : "bg-slate-800 text-slate-600 cursor-not-allowed"
+          }`}
+          title="Set loop end at current position"
+        >
+          B
+        </button>
+        {loop && (
+          <button
+            onClick={onClearLoop}
+            className="px-2 py-1 rounded text-xs bg-slate-700 text-slate-300 hover:bg-slate-600"
+            title="Clear loop"
+          >
+            &times;
+          </button>
+        )}
+        {loop && (
+          <span className="text-amber-400 text-xs">
+            m{loop.startMeasure + 1}-{loop.endMeasure + 1}
+          </span>
+        )}
       </div>
 
       <div className="flex items-center gap-1.5">
