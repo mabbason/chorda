@@ -324,6 +324,7 @@ function App() {
         visibleHands={visibleHands}
         loop={loop}
         loopAMeasure={loopAMeasure}
+        samplerLoaded={playback.samplerLoaded}
         onPlay={handlePlay}
         onPause={handlePause}
         onStop={handleStop}

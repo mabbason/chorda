@@ -9,6 +9,7 @@ interface Props {
   visibleHands: Set<string>;
   loop: LoopRange | null;
   loopAMeasure: number | null;
+  samplerLoaded: boolean;
   onPlay: () => void;
   onPause: () => void;
   onStop: () => void;
@@ -60,6 +61,7 @@ export function Controls({
   currentTime,
   duration,
   speed,
+  samplerLoaded,
   onPlay,
   onPause,
   onStop,
@@ -93,11 +95,18 @@ export function Controls({
       <div className="flex items-center gap-1.5">
         <button
           onClick={isPlaying ? onPause : onPlay}
-          className="w-9 h-9 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white flex items-center justify-center"
-          title={isPlaying ? "Pause" : "Play"}
+          disabled={!samplerLoaded}
+          className={`w-9 h-9 rounded-full text-white flex items-center justify-center ${
+            samplerLoaded
+              ? "bg-cyan-600 hover:bg-cyan-500"
+              : "bg-slate-600 cursor-wait"
+          }`}
+          title={!samplerLoaded ? "Loading piano..." : isPlaying ? "Pause" : "Play"}
           aria-label={isPlaying ? "Pause" : "Play"}
         >
-          {isPlaying ? <PauseIcon /> : <PlayIcon />}
+          {!samplerLoaded ? (
+            <span className="text-[10px]">...</span>
+          ) : isPlaying ? <PauseIcon /> : <PlayIcon />}
         </button>
 
         <button

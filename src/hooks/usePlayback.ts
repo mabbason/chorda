@@ -1,26 +1,65 @@
-import { useCallback, useRef, useEffect } from "react";
+import { useCallback, useRef, useEffect, useState } from "react";
 import * as Tone from "tone";
 import type { Song } from "../models/song";
 
+const SALAMANDER_BASE_URL = "https://tonejs.github.io/audio/salamander/";
+
+const SAMPLER_NOTES: Record<string, string> = {
+  A0: "A0.mp3",
+  C1: "C1.mp3",
+  "D#1": "Ds1.mp3",
+  "F#1": "Fs1.mp3",
+  A1: "A1.mp3",
+  C2: "C2.mp3",
+  "D#2": "Ds2.mp3",
+  "F#2": "Fs2.mp3",
+  A2: "A2.mp3",
+  C3: "C3.mp3",
+  "D#3": "Ds3.mp3",
+  "F#3": "Fs3.mp3",
+  A3: "A3.mp3",
+  C4: "C4.mp3",
+  "D#4": "Ds4.mp3",
+  "F#4": "Fs4.mp3",
+  A4: "A4.mp3",
+  C5: "C5.mp3",
+  "D#5": "Ds5.mp3",
+  "F#5": "Fs5.mp3",
+  A5: "A5.mp3",
+  C6: "C6.mp3",
+  "D#6": "Ds6.mp3",
+  "F#6": "Fs6.mp3",
+  A6: "A6.mp3",
+  C7: "C7.mp3",
+  "D#7": "Ds7.mp3",
+  "F#7": "Fs7.mp3",
+  A7: "A7.mp3",
+  C8: "C8.mp3",
+};
+
 export function usePlayback(song: Song | null) {
-  const synthRef = useRef<Tone.PolySynth | null>(null);
+  const samplerRef = useRef<Tone.Sampler | null>(null);
   const speedRef = useRef(1);
   const songRef = useRef<Song | null>(null);
+  const [samplerLoaded, setSamplerLoaded] = useState(false);
 
-  // Keep song ref in sync
   useEffect(() => {
     songRef.current = song;
   }, [song]);
 
-  // Initialize synth
+  // Initialize sampler with Salamander Grand Piano samples
   useEffect(() => {
-    synthRef.current = new Tone.PolySynth(Tone.Synth, {
-      oscillator: { type: "triangle" },
-      envelope: { attack: 0.02, decay: 0.1, sustain: 0.3, release: 0.1 },
+    const sampler = new Tone.Sampler({
+      urls: SAMPLER_NOTES,
+      baseUrl: SALAMANDER_BASE_URL,
+      release: 1,
+      onload: () => setSamplerLoaded(true),
     }).toDestination();
 
+    samplerRef.current = sampler;
+
     return () => {
-      synthRef.current?.dispose();
+      sampler.dispose();
       Tone.getTransport().cancel();
       Tone.getTransport().stop();
     };
@@ -28,8 +67,8 @@ export function usePlayback(song: Song | null) {
 
   const scheduleNotes = useCallback((theSong: Song, speed: number) => {
     const transport = Tone.getTransport();
-    const synth = synthRef.current;
-    if (!synth) return;
+    const sampler = samplerRef.current;
+    if (!sampler) return;
 
     transport.cancel();
 
@@ -39,20 +78,15 @@ export function usePlayback(song: Song | null) {
         const duration = note.durationSec / speed;
 
         transport.schedule((time) => {
-          synth.triggerAttackRelease(
-            Tone.Frequency(note.midi, "midi").toFrequency(),
-            duration,
-            time,
-            note.velocity / 127
-          );
+          const freq = Tone.Frequency(note.midi, "midi").toFrequency();
+          sampler.triggerAttackRelease(freq, duration, time, note.velocity / 127);
         }, scheduledTime);
       }
     }
   }, []);
 
-  // Schedule notes when song changes
   useEffect(() => {
-    if (!song || !synthRef.current) return;
+    if (!song || !samplerRef.current) return;
 
     const transport = Tone.getTransport();
     transport.cancel();
@@ -64,7 +98,7 @@ export function usePlayback(song: Song | null) {
   }, [song, scheduleNotes]);
 
   const releaseAll = useCallback(() => {
-    synthRef.current?.releaseAll();
+    samplerRef.current?.releaseAll();
   }, []);
 
   const play = useCallback(async () => {
@@ -95,18 +129,11 @@ export function usePlayback(song: Song | null) {
 
     const transport = Tone.getTransport();
     const wasPlaying = transport.state === "started";
-
-    // Get current position in real song time
     const currentSongTime = transport.seconds * speedRef.current;
 
-    // Release held notes
     releaseAll();
-
-    // Pause transport, reschedule, restore position
     transport.pause();
     scheduleNotes(song, newSpeed);
-
-    // Set transport to new position (adjusted for new speed)
     transport.seconds = currentSongTime / newSpeed;
     speedRef.current = newSpeed;
 
@@ -116,7 +143,6 @@ export function usePlayback(song: Song | null) {
   }, [scheduleNotes, releaseAll]);
 
   const getCurrentTime = useCallback((): number => {
-    // Convert transport time back to real song time
     return Tone.getTransport().seconds * speedRef.current;
   }, []);
 
@@ -128,5 +154,5 @@ export function usePlayback(song: Song | null) {
     return speedRef.current;
   }, []);
 
-  return { play, pause, stop, seek, changeSpeed, getCurrentTime, getState, getSpeed };
+  return { play, pause, stop, seek, changeSpeed, getCurrentTime, getState, getSpeed, samplerLoaded };
 }
