@@ -36,7 +36,7 @@ export function PassphraseGate({ onSuccess }: Props) {
     <div className="h-screen bg-n-900 flex items-center justify-center">
       <div className={`w-full max-w-sm px-6 ${shake ? "animate-shake" : ""}`}>
         <div className="flex justify-center mb-2">
-          <img src="/logos/chorda-logo-full.png" alt="Chorda" className="h-24" />
+          <img src="/logos/chorda-logo-white-full.png" alt="Chorda" className="h-40" />
         </div>
         <p className="text-n-500 text-center text-sm mb-8">Enter passphrase to continue</p>
 

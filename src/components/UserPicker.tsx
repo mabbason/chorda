@@ -61,7 +61,7 @@ export function UserPicker({ onUserSelected, onLogout }: Props) {
     <div className="h-screen bg-n-900 flex items-center justify-center">
       <div className="w-full max-w-lg px-6">
         <div className="flex justify-center mb-2">
-          <img src="/logos/chorda-logo-full.png" alt="Chorda" className="h-24" />
+          <img src="/logos/chorda-logo-white-full.png" alt="Chorda" className="h-40" />
         </div>
         <p className="text-n-500 text-center text-sm mb-8">Who's playing?</p>
 
@@ -69,7 +69,7 @@ export function UserPicker({ onUserSelected, onLogout }: Props) {
           <div className="text-n-500 text-center">Loading...</div>
         ) : (
           <>
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="flex flex-wrap justify-center gap-2 mb-6">
               {users.map((user) => (
                 <button
                   key={user.id}

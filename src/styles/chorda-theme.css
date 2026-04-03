@@ -45,6 +45,7 @@
        Site UI (text, borders, buttons) uses --color-primary (#36322f).
        ──────────────────────────────────────────────────── */
   --color-logo-black:       #1a1816;
+  --color-logo-white:       #ffffff;
 
   --color-primary:          #36322f;
   --color-primary-light:    #504b47;

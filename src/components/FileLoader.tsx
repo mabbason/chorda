@@ -132,13 +132,13 @@ export function FileLoader({ onFileLoad }: Props) {
       className="flex flex-col items-center h-full py-8 px-4 overflow-y-auto"
     >
       <div className="text-center mb-6">
-        <img src="/logos/chorda-logo-horizontal.png" alt="Chorda" className="h-10 mx-auto mb-2" />
+        <img src="/logos/chorda-logo-white-horizontal.png" alt="Chorda" className="h-10 mx-auto mb-2" />
         <p className="text-n-400">Choose a song to start learning</p>
       </div>
 
       {/* Search bar */}
       {apiAvailable && (
-        <div className="w-full max-w-2xl mb-4">
+        <div className="w-full max-w-sm mb-4">
           <input
             type="text"
             value={query}
@@ -151,7 +151,7 @@ export function FileLoader({ onFileLoad }: Props) {
 
       {/* Search results */}
       {query.trim() && results.length > 0 && (
-        <div className="w-full max-w-2xl mb-6">
+        <div className="w-full max-w-sm mb-6">
           <div className="text-n-500 text-xs mb-2">
             {searching ? "Searching..." : `${results.length} results`}
           </div>
@@ -164,7 +164,7 @@ export function FileLoader({ onFileLoad }: Props) {
                 className="flex items-center gap-3 px-4 py-2.5 bg-n-800 hover:bg-n-700 rounded-lg text-left transition-colors disabled:opacity-50"
               >
                 <span
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-bold text-white shrink-0 ${LEVEL_COLORS[song.difficulty] ?? "bg-n-600"}`}
+                  className={`px-1.5 py-0.5 rounded text-xs font-bold text-n-900 shrink-0 ${LEVEL_COLORS[song.difficulty] ?? "bg-n-600"}`}
                 >
                   {LEVEL_LABELS[song.difficulty] ?? "?"}
                 </span>
@@ -183,14 +183,14 @@ export function FileLoader({ onFileLoad }: Props) {
       )}
 
       {query.trim() && results.length === 0 && !searching && (
-        <div className="w-full max-w-2xl mb-6 text-center text-n-500 text-sm py-4">
+        <div className="w-full max-w-sm mb-6 text-center text-n-500 text-sm py-4">
           No songs found for "{query}"
         </div>
       )}
 
       {/* Starter songs (show when not searching) */}
       {!query.trim() && (
-        <div className="w-full max-w-2xl mb-8">
+        <div className="w-full max-w-sm mb-8">
           <div className="text-n-500 text-xs mb-2">Starter songs</div>
           <div className="grid gap-2">
             {STARTER_SONGS.map((song) => (
@@ -201,7 +201,7 @@ export function FileLoader({ onFileLoad }: Props) {
                 className="flex items-center gap-3 px-4 py-3 bg-n-800 hover:bg-n-700 rounded-lg text-left transition-colors disabled:opacity-50"
               >
                 <span
-                  className={`px-2 py-0.5 rounded text-[10px] font-bold text-white shrink-0 ${LEVEL_COLORS[song.level]}`}
+                  className={`px-2 py-0.5 rounded text-xs font-bold text-n-900 shrink-0 ${LEVEL_COLORS[song.level]}`}
                 >
                   {song.levelLabel}
                 </span>
