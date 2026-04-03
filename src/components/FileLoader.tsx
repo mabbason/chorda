@@ -48,6 +48,7 @@ export function FileLoader({ onFileLoad }: Props) {
   // Debounced search
   useEffect(() => {
     if (!query.trim() || !apiAvailable) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clearing results when search is empty/disabled
       setResults([]);
       return;
     }

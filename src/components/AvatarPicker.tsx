@@ -1,3 +1,4 @@
+// eslint-disable-next-line react-refresh/only-export-components
 export const AVATAR_MAP: Record<string, string> = {
   piano: "\u{1F3B9}",
   guitar: "\u{1F3B8}",

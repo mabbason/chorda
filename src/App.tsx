@@ -257,7 +257,7 @@ function App() {
       switch (e.code) {
         case "Space":
           e.preventDefault();
-          isPlaying ? handlePause() : handlePlay();
+          if (isPlaying) { handlePause(); } else { handlePlay(); }
           break;
         case "BracketLeft":
           e.preventDefault();
@@ -352,7 +352,7 @@ function App() {
     };
     rafRef.current = requestAnimationFrame(update);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [song, playback, isPlaying, loop, sections]);
+  }, [song, playback, isPlaying, loop, sections, userId]);
 
   // Auth gates
   if (authState === "checking") {

@@ -32,6 +32,14 @@ jobs:
       - name: Unit tests
         run: npm test
 
+      - name: Upload build artifacts
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
+
   e2e:
     runs-on: ubuntu-latest
     needs: ci
@@ -58,3 +66,27 @@ jobs:
           name: playwright-results
           path: test-results/
           retention-days: 7
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [ci, e2e]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Deploy to chorda.mabbason.com
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H mabbason.com >> ~/.ssh/known_hosts 2>/dev/null
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key" \
+            dist/ mabba@mabbason.com:/var/www/chorda.mabbason.com/
+          rm -f ~/.ssh/deploy_key

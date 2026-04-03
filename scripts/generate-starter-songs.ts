@@ -9,8 +9,10 @@ const { Midi } = require("@tonejs/midi");
 
 const OUT_DIR = join(import.meta.dirname, "../public/songs");
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function saveMidi(midi: any, filename: string) {
   writeFileSync(join(OUT_DIR, filename), Buffer.from(midi.toArray()));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const notes = midi.tracks.reduce((s: number, t: any) => s + t.notes.length, 0);
   console.log(`${filename}: ${midi.duration.toFixed(1)}s, ${notes} notes`);
 }
