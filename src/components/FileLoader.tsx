@@ -132,7 +132,7 @@ export function FileLoader({ onFileLoad }: Props) {
       className="flex flex-col items-center h-full py-8 px-4 overflow-y-auto"
     >
       <div className="text-center mb-6">
-        <h1 className="text-3xl font-bold text-white mb-2">Piano Trainer</h1>
+        <h1 className="text-3xl font-bold text-white mb-2">Chorda</h1>
         <p className="text-slate-400">Choose a song to start learning</p>
       </div>
 

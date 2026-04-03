@@ -5,7 +5,7 @@ const BASE_URL = "http://localhost:5173";
 test.describe("Starter Songs", () => {
   test("shows song catalog on file loader screen", async ({ page }) => {
     await page.goto(BASE_URL);
-    await expect(page.locator("text=Piano Trainer")).toBeVisible();
+    await expect(page.locator("text=Chorda")).toBeVisible();
     await expect(page.locator("text=Choose a song to start learning")).toBeVisible();
 
     // Check all level labels exist

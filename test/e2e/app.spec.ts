@@ -12,10 +12,10 @@ const playBtn = '[aria-label="Play"]';
 const pauseBtn = '[aria-label="Pause"]';
 const stopBtn = '[aria-label="Stop"]';
 
-test.describe("Piano Trainer App", () => {
+test.describe("Chorda App", () => {
   test("shows file loader on initial load", async ({ page }) => {
     await page.goto(BASE_URL);
-    await expect(page.locator("text=Piano Trainer")).toBeVisible();
+    await expect(page.locator("text=Chorda")).toBeVisible();
     await expect(page.locator("text=Drop a MIDI file")).toBeVisible();
     await page.screenshot({ path: "test/screenshots/01-file-loader.png" });
   });
@@ -83,7 +83,7 @@ test.describe("Piano Trainer App", () => {
     await expect(page.locator("canvas")).toBeVisible();
 
     await page.click("text=\u2190");
-    await expect(page.locator("text=Piano Trainer")).toBeVisible();
+    await expect(page.locator("text=Chorda")).toBeVisible();
     await expect(page.locator("text=Drop a MIDI file")).toBeVisible();
   });
 

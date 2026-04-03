@@ -19,9 +19,9 @@ export interface ProfileData {
   songsCompleted: number;
 }
 
-const PROFILES_KEY = "piano-trainer-profiles";
-const ACTIVE_PROFILE_KEY = "piano-trainer-active-profile";
-const PROGRESS_PREFIX = "piano-trainer-progress:";
+const PROFILES_KEY = "chorda-profiles";
+const ACTIVE_PROFILE_KEY = "chorda-active-profile";
+const PROGRESS_PREFIX = "chorda-progress:";
 
 export function getProfiles(): UserProfile[] {
   try {

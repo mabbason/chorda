@@ -1,4 +1,6 @@
-const API_BASE = import.meta.env.VITE_SONG_API_URL || "http://localhost:3001";
+const API_BASE = import.meta.env.VITE_SONG_API_URL || (
+  import.meta.env.DEV ? "http://localhost:3001" : ""
+);
 
 export interface SongResult {
   id: string;

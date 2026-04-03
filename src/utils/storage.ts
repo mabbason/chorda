@@ -1,6 +1,6 @@
 import type { SectionProgress } from "../engine/sections";
 
-const STORAGE_PREFIX = "piano-trainer-progress:";
+const STORAGE_PREFIX = "chorda-progress:";
 
 function storageKey(songTitle: string): string {
   return STORAGE_PREFIX + songTitle;

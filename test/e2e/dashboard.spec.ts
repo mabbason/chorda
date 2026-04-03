@@ -37,6 +37,6 @@ test.describe("Progress Dashboard", () => {
     await page.click("text=Dashboard");
     await page.click("text=× Close");
 
-    await expect(page.locator("text=Piano Trainer")).toBeVisible();
+    await expect(page.locator("text=Chorda")).toBeVisible();
   });
 });
