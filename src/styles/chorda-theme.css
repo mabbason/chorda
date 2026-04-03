@@ -1,0 +1,244 @@
+/* ============================================================
+   CHORDA — Brand Theme (CSS Custom Properties)
+   Generated: 2026-04-03
+   ============================================================ */
+
+/* ── Font Faces ────────────────────────────────────────────── */
+
+@font-face {
+  font-family: 'Goldman Sans';
+  src: url('/fonts/GoldmanSans_A_Lt.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Goldman Sans';
+  src: url('/fonts/GoldmanSans_A_Rg.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Goldman Sans';
+  src: url('/fonts/GoldmanSans_A_Md.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Goldman Sans';
+  src: url('/fonts/GoldmanSans_A_Blk.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Root Tokens ───────────────────────────────────────────── */
+
+:root {
+  /* ── Brand Colors ───────────────────────────────────────
+       Logo body/wordmark uses --color-logo-black (#1a1816).
+       Site UI (text, borders, buttons) uses --color-primary (#36322f).
+       ──────────────────────────────────────────────────── */
+  --color-logo-black:       #1a1816;
+
+  --color-primary:          #36322f;
+  --color-primary-light:    #504b47;
+  --color-primary-dark:     #1a1816;
+
+  --color-purple:           #9768f8;
+  --color-purple-light:     #b48ffa;
+  --color-purple-dark:      #7a4ad6;
+
+  --color-pink:             #fb396a;
+  --color-pink-light:       #fc6b8f;
+  --color-pink-dark:        #d92554;
+
+  --color-green:            #8ec56f;
+  --color-green-light:      #aad494;
+  --color-green-dark:       #6da84f;
+
+  --color-yellow:           #fdd63b;
+  --color-yellow-light:     #fee26e;
+  --color-yellow-dark:      #e5bf1e;
+
+  /* ── Neutrals ─────────────────────────────────────────── */
+  --color-white:            #ffffff;
+  --color-gray-50:          #f8f9fb;
+  --color-gray-100:         #f0f2f5;
+  --color-gray-200:         #dfe3ea;
+  --color-gray-300:         #c4cad6;
+  --color-gray-400:         #a1aab8;
+  --color-gray-500:         #7d8799;
+  --color-gray-600:         #5c6577;
+  --color-gray-700:         #3f4858;
+  --color-gray-800:         #272e3b;
+  --color-gray-900:         #141922;
+  --color-black:            #0a0d12;
+
+  /* ── Semantic Colors ──────────────────────────────────── */
+  --color-success:          var(--color-green);
+  --color-warning:          var(--color-yellow);
+  --color-error:            var(--color-pink);
+  --color-info:             var(--color-purple);
+
+  /* ── Surfaces & Backgrounds ───────────────────────────── */
+  --surface-base:           var(--color-white);
+  --surface-raised:         var(--color-gray-50);
+  --surface-overlay:        var(--color-white);
+  --surface-inverse:        var(--color-gray-900);
+
+  /* ── Text ─────────────────────────────────────────────── */
+  --text-primary:           var(--color-gray-900);
+  --text-secondary:         var(--color-gray-600);
+  --text-tertiary:          var(--color-gray-400);
+  --text-inverse:           var(--color-white);
+  --text-link:              var(--color-primary);
+  --text-link-hover:        var(--color-primary-dark);
+
+  /* ── Typography ───────────────────────────────────────── */
+  --font-headline:          'Goldman Sans', system-ui, -apple-system, sans-serif;
+  --font-body:              'Goldman Sans', system-ui, -apple-system, sans-serif;
+  --font-mono:              'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+
+  --font-weight-light:      300;
+  --font-weight-regular:    400;
+  --font-weight-medium:     500;
+  --font-weight-black:      900;
+
+  /* Headlines use Goldman Sans Black (900) */
+  --headline-weight:        var(--font-weight-black);
+  /* Body text uses Regular (400) */
+  --body-weight:            var(--font-weight-regular);
+
+  /* ── Type Scale (modular — 1.25 ratio) ────────────────── */
+  --text-xs:                0.75rem;    /* 12px */
+  --text-sm:                0.875rem;   /* 14px */
+  --text-base:              1rem;       /* 16px */
+  --text-lg:                1.125rem;   /* 18px */
+  --text-xl:                1.25rem;    /* 20px */
+  --text-2xl:               1.5rem;     /* 24px */
+  --text-3xl:               1.875rem;   /* 30px */
+  --text-4xl:               2.25rem;    /* 36px */
+  --text-5xl:               3rem;       /* 48px */
+  --text-6xl:               3.75rem;    /* 60px */
+
+  /* ── Line Heights ─────────────────────────────────────── */
+  --leading-none:           1;
+  --leading-tight:          1.25;
+  --leading-snug:           1.375;
+  --leading-normal:         1.5;
+  --leading-relaxed:        1.625;
+  --leading-loose:          2;
+
+  /* ── Spacing Scale (4px base) ─────────────────────────── */
+  --space-0:                0;
+  --space-1:                0.25rem;    /* 4px  */
+  --space-2:                0.5rem;     /* 8px  */
+  --space-3:                0.75rem;    /* 12px */
+  --space-4:                1rem;       /* 16px */
+  --space-5:                1.25rem;    /* 20px */
+  --space-6:                1.5rem;     /* 24px */
+  --space-8:                2rem;       /* 32px */
+  --space-10:               2.5rem;     /* 40px */
+  --space-12:               3rem;       /* 48px */
+  --space-16:               4rem;       /* 64px */
+  --space-20:               5rem;       /* 80px */
+  --space-24:               6rem;       /* 96px */
+
+  /* ── Border Radius ────────────────────────────────────── */
+  --radius-none:            0;
+  --radius-sm:              0.25rem;    /* 4px  */
+  --radius-md:              0.5rem;     /* 8px  */
+  --radius-lg:              0.75rem;    /* 12px */
+  --radius-xl:              1rem;       /* 16px */
+  --radius-2xl:             1.5rem;     /* 24px */
+  --radius-full:            9999px;
+
+  /* ── Shadows ──────────────────────────────────────────── */
+  --shadow-sm:              0 1px 2px rgba(10, 13, 18, 0.05);
+  --shadow-md:              0 4px 6px -1px rgba(10, 13, 18, 0.08),
+                            0 2px 4px -2px rgba(10, 13, 18, 0.05);
+  --shadow-lg:              0 10px 15px -3px rgba(10, 13, 18, 0.08),
+                            0 4px 6px -4px rgba(10, 13, 18, 0.04);
+  --shadow-xl:              0 20px 25px -5px rgba(10, 13, 18, 0.10),
+                            0 8px 10px -6px rgba(10, 13, 18, 0.05);
+
+  /* ── Borders ──────────────────────────────────────────── */
+  --border-default:         1px solid var(--color-gray-200);
+  --border-strong:          1px solid var(--color-gray-300);
+  --border-focus:           2px solid var(--color-primary);
+
+  /* ── Transitions ──────────────────────────────────────── */
+  --transition-fast:        150ms ease;
+  --transition-base:        250ms ease;
+  --transition-slow:        400ms ease;
+
+  /* ── Z-Index Scale ────────────────────────────────────── */
+  --z-base:                 0;
+  --z-dropdown:             10;
+  --z-sticky:               20;
+  --z-overlay:              30;
+  --z-modal:                40;
+  --z-popover:              50;
+  --z-toast:                60;
+
+  /* ── Container Widths ─────────────────────────────────── */
+  --container-sm:           640px;
+  --container-md:           768px;
+  --container-lg:           1024px;
+  --container-xl:           1280px;
+  --container-2xl:          1536px;
+}
+
+/* ── Dark Mode ─────────────────────────────────────────────── */
+
+[data-theme="dark"],
+.dark {
+  --color-primary:          #a89e95;
+  --color-primary-light:    #c4bbb3;
+  --color-primary-dark:     #7a7169;
+
+  --color-purple:           #b48ffa;
+  --color-purple-light:     #ccb2fc;
+  --color-purple-dark:      #9768f8;
+
+  --color-pink:             #fc6b8f;
+  --color-pink-light:       #fd9ab4;
+  --color-pink-dark:        #fb396a;
+
+  --color-green:            #aad494;
+  --color-green-light:      #c4e2b5;
+  --color-green-dark:       #8ec56f;
+
+  --color-yellow:           #fee26e;
+  --color-yellow-light:     #feeda0;
+  --color-yellow-dark:      #fdd63b;
+
+  --surface-base:           var(--color-gray-900);
+  --surface-raised:         var(--color-gray-800);
+  --surface-overlay:        var(--color-gray-800);
+  --surface-inverse:        var(--color-gray-50);
+
+  --text-primary:           var(--color-gray-50);
+  --text-secondary:         var(--color-gray-400);
+  --text-tertiary:          var(--color-gray-500);
+  --text-inverse:           var(--color-gray-900);
+  --text-link:              var(--color-primary);
+  --text-link-hover:        var(--color-primary-light);
+
+  --border-default:         1px solid var(--color-gray-700);
+  --border-strong:          1px solid var(--color-gray-600);
+
+  --shadow-sm:              0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md:              0 4px 6px -1px rgba(0, 0, 0, 0.4),
+                            0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg:              0 10px 15px -3px rgba(0, 0, 0, 0.4),
+                            0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  --shadow-xl:              0 20px 25px -5px rgba(0, 0, 0, 0.5),
+                            0 8px 10px -6px rgba(0, 0, 0, 0.3);
+}

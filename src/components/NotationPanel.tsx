@@ -61,10 +61,10 @@ export function NotationPanel({ song, getCurrentTime, visibleHands, expanded, on
   }, [song, getCurrentTime, visibleHands, expanded]);
 
   return (
-    <div className="border-b border-slate-700">
+    <div className="border-b border-n-700">
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-center py-1 bg-slate-800/50 hover:bg-slate-700/50 text-slate-500 hover:text-slate-300 transition-colors"
+        className="w-full flex items-center justify-center py-1 bg-n-800/50 hover:bg-n-700/50 text-n-500 hover:text-n-300 transition-colors"
         title={expanded ? "Hide notation" : "Show notation"}
       >
         <svg
@@ -81,7 +81,7 @@ export function NotationPanel({ song, getCurrentTime, visibleHands, expanded, on
         <canvas
           ref={canvasRef}
           className="w-full block"
-          style={{ height: PANEL_HEIGHT, background: "#1e293b" }}
+          style={{ height: PANEL_HEIGHT, background: "#272e3b" }}
         />
       )}
     </div>

@@ -1,12 +1,13 @@
 import type { Song } from "../models/song";
 
-const STAFF_LINE_COLOR = "#475569";
-const NOTE_COLOR = "#e2e8f0";
-const ACTIVE_NOTE_COLOR = "#22d3ee";
-const RIGHT_HAND_NOTE = "#06b6d4";
-const LEFT_HAND_NOTE = "#22c55e";
-const CURSOR_COLOR = "#f59e0b";
-const LEDGER_LINE_COLOR = "#64748b";
+// Keep in sync with brand palette in src/index.css @theme
+const STAFF_LINE_COLOR = "#5c6577";    // n-600
+const NOTE_COLOR = "#dfe3ea";          // n-200
+const ACTIVE_NOTE_COLOR = "#b48ffa";   // purple-light
+const RIGHT_HAND_NOTE = "#9768f8";     // purple-base
+const LEFT_HAND_NOTE = "#8ec56f";      // brand-green-base
+const CURSOR_COLOR = "#fdd63b";        // yellow-base
+const LEDGER_LINE_COLOR = "#7d8799";   // n-500
 
 const STAFF_LINES = 5;
 const STAFF_GAP = 8; // pixels between staff lines
@@ -214,7 +215,7 @@ export function renderNotation(
   visibleHands: Set<string>
 ) {
   // Clear
-  ctx.fillStyle = "#1e293b";
+  ctx.fillStyle = "#272e3b";
   ctx.fillRect(0, 0, width, height);
 
   const layout = computeLayout(height);
@@ -337,7 +338,7 @@ export function renderNotation(
   }
 
   // Measure numbers
-  ctx.fillStyle = "#64748b";
+  ctx.fillStyle = "#7d8799";
   ctx.font = "9px system-ui";
   ctx.textAlign = "center";
   for (const measure of visibleMeasures) {
