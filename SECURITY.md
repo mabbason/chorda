@@ -239,7 +239,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ## New Dependencies
 
 ```bash
-cd ~/projects/piano-trainer-api
+cd ~/projects/chorda-api
 npm install jsonwebtoken cookie-parser express-rate-limit
 npm install -D @types/jsonwebtoken @types/cookie-parser
 ```
@@ -248,11 +248,11 @@ npm install -D @types/jsonwebtoken @types/cookie-parser
 
 | File | Action | Description |
 |------|--------|-------------|
-| `piano-trainer-api/src/server.ts` | Modify | Add auth routes, middleware, rate limiting, CORS |
-| `piano-trainer-api/src/auth.ts` | Create | JWT helpers, brute-force tracking |
-| `piano-trainer/src/components/PassphraseGate.tsx` | Create | Passphrase prompt UI |
-| `piano-trainer/src/utils/auth.ts` | Create | `checkAuth()`, `submitPassphrase()` API calls |
-| `piano-trainer/src/App.tsx` | Modify | Wrap in `<PassphraseGate>` |
+| `chorda-api/src/server.ts` | Modify | Add auth routes, middleware, rate limiting, CORS |
+| `chorda-api/src/auth.ts` | Create | JWT helpers, brute-force tracking |
+| `chorda/src/components/PassphraseGate.tsx` | Create | Passphrase prompt UI |
+| `chorda/src/utils/auth.ts` | Create | `checkAuth()`, `submitPassphrase()` API calls |
+| `chorda/src/App.tsx` | Modify | Wrap in `<PassphraseGate>` |
 | `/etc/nginx/sites-available/chorda.mabbason.com` | Modify | Add rate limit zones |
 
 ## Testing Plan

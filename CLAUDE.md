@@ -1,4 +1,4 @@
-# Piano Trainer
+# Chorda
 
 A web-based piano learning app that helps you learn songs through visual waterfall guidance and guided progression.
 
@@ -60,7 +60,7 @@ Songs are parsed into a normalized `Song` model (notes, timing, hand assignments
 
 ## Design Doc
 
-Full design document: `~/.gstack/projects/piano-trainer/mabba-main-design-20260402-094500.md`
+Full design document: `~/.gstack/projects/chorda/mabba-main-design-20260402-094500.md`
 
 ## Skill routing
 

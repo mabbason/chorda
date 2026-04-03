@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 const BASE_URL = "http://localhost:5173";
 
 // These tests require the song API running on port 3001
-// Run: cd ~/projects/piano-trainer-api && npm run dev
+// Run: cd ~/projects/chorda-api && npm run dev
 
 test.describe("Song Search", () => {
   test.beforeEach(async ({ page }) => {

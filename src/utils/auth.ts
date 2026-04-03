@@ -88,6 +88,20 @@ export async function logout(): Promise<void> {
   await fetch(`${API_BASE}/api/auth/logout`, { ...opts, method: "POST" });
 }
 
+export async function changePassphrase(
+  currentPassphrase: string,
+  newPassphrase: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const res = await fetchWithAuth(`${API_BASE}/api/auth/change-passphrase`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ currentPassphrase, newPassphrase }),
+  });
+  const data = await res.json();
+  if (!res.ok) return { ok: false, error: data.error };
+  return { ok: true };
+}
+
 export async function fetchUsers(): Promise<User[]> {
   const res = await fetchWithAuth(`${API_BASE}/api/users`);
   if (!res.ok) return [];
