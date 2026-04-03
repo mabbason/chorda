@@ -33,10 +33,12 @@ export function PassphraseGate({ onSuccess }: Props) {
   }, [passphrase, loading, onSuccess]);
 
   return (
-    <div className="h-screen bg-slate-900 flex items-center justify-center">
+    <div className="h-screen bg-n-900 flex items-center justify-center">
       <div className={`w-full max-w-sm px-6 ${shake ? "animate-shake" : ""}`}>
-        <h1 className="text-4xl font-bold text-white text-center mb-2">Chorda</h1>
-        <p className="text-slate-500 text-center text-sm mb-8">Enter passphrase to continue</p>
+        <div className="flex justify-center mb-2">
+          <img src="/logos/chorda-logo-full.png" alt="Chorda" className="h-24" />
+        </div>
+        <p className="text-n-500 text-center text-sm mb-8">Enter passphrase to continue</p>
 
         <input
           type="password"
@@ -44,18 +46,18 @@ export function PassphraseGate({ onSuccess }: Props) {
           onChange={(e) => setPassphrase(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           placeholder="Passphrase"
-          className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-500 text-center focus:outline-none focus:border-cyan-500"
+          className="w-full px-4 py-3 bg-n-800 border border-n-600 rounded-lg text-white placeholder-n-500 text-center focus:outline-none focus:border-purple-light"
           autoFocus
         />
 
         {error && (
-          <p className="text-red-400 text-sm text-center mt-3">{error}</p>
+          <p className="text-pink-base text-sm text-center mt-3">{error}</p>
         )}
 
         <button
           onClick={handleSubmit}
           disabled={loading || !passphrase.trim()}
-          className="w-full mt-4 py-3 bg-cyan-600 hover:bg-cyan-500 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg font-medium transition-colors"
+          className="w-full mt-4 py-3 bg-purple-base hover:bg-purple-light disabled:bg-n-700 disabled:text-n-500 text-white rounded-lg font-medium transition-colors"
         >
           {loading ? "Verifying..." : "Enter"}
         </button>

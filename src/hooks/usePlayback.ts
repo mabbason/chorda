@@ -37,15 +37,20 @@ const SAMPLER_NOTES: Record<string, string> = {
   C8: "C8.mp3",
 };
 
-export function usePlayback(song: Song | null) {
+export function usePlayback(song: Song | null, visibleHands: Set<string>) {
   const samplerRef = useRef<Tone.Sampler | null>(null);
   const speedRef = useRef(1);
   const songRef = useRef<Song | null>(null);
+  const visibleHandsRef = useRef(visibleHands);
   const [samplerLoaded, setSamplerLoaded] = useState(false);
 
   useEffect(() => {
     songRef.current = song;
   }, [song]);
+
+  useEffect(() => {
+    visibleHandsRef.current = visibleHands;
+  }, [visibleHands]);
 
   // Initialize sampler with Salamander Grand Piano samples
   useEffect(() => {
@@ -65,7 +70,7 @@ export function usePlayback(song: Song | null) {
     };
   }, []);
 
-  const scheduleNotes = useCallback((theSong: Song, speed: number) => {
+  const scheduleNotes = useCallback((theSong: Song, speed: number, hands: Set<string>) => {
     const transport = Tone.getTransport();
     const sampler = samplerRef.current;
     if (!sampler) return;
@@ -73,6 +78,7 @@ export function usePlayback(song: Song | null) {
     transport.cancel();
 
     for (const track of theSong.tracks) {
+      if (!hands.has(track.hand) && track.hand !== "unknown") continue;
       for (const note of track.notes) {
         const scheduledTime = note.startSec / speed;
         const duration = note.durationSec / speed;
@@ -85,6 +91,8 @@ export function usePlayback(song: Song | null) {
     }
   }, []);
 
+  const handEffectMounted = useRef(false);
+
   useEffect(() => {
     if (!song || !samplerRef.current) return;
 
@@ -93,9 +101,33 @@ export function usePlayback(song: Song | null) {
     transport.stop();
     transport.seconds = 0;
     speedRef.current = 1;
+    handEffectMounted.current = false;
 
-    scheduleNotes(song, 1);
+    scheduleNotes(song, 1, visibleHandsRef.current);
   }, [song, scheduleNotes]);
+
+  // Reschedule notes when hand visibility changes (preserve playback position)
+  useEffect(() => {
+    if (!handEffectMounted.current) {
+      handEffectMounted.current = true;
+      return;
+    }
+
+    const currentSong = songRef.current;
+    if (!currentSong || !samplerRef.current) return;
+
+    const transport = Tone.getTransport();
+    const wasPlaying = transport.state === "started";
+    const currentPos = transport.seconds;
+
+    samplerRef.current.releaseAll();
+    scheduleNotes(currentSong, speedRef.current, visibleHands);
+    transport.seconds = currentPos;
+
+    if (wasPlaying) {
+      transport.start();
+    }
+  }, [visibleHands, scheduleNotes]);
 
   const releaseAll = useCallback(() => {
     samplerRef.current?.releaseAll();
@@ -133,7 +165,7 @@ export function usePlayback(song: Song | null) {
 
     releaseAll();
     transport.pause();
-    scheduleNotes(song, newSpeed);
+    scheduleNotes(song, newSpeed, visibleHandsRef.current);
     transport.seconds = currentSongTime / newSpeed;
     speedRef.current = newSpeed;
 

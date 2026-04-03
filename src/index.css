@@ -1,4 +1,42 @@
 @import "tailwindcss";
+@import "./styles/chorda-theme.css";
+
+/* ── Brand Color Palette for Tailwind v4 ──────────────────── */
+@theme {
+  /* Brand accent colors */
+  --color-purple-base: #9768f8;
+  --color-purple-light: #b48ffa;
+  --color-purple-dark: #7a4ad6;
+
+  --color-pink-base: #fb396a;
+  --color-pink-light: #fc6b8f;
+  --color-pink-dark: #d92554;
+
+  --color-brand-green-base: #8ec56f;
+  --color-brand-green-light: #aad494;
+  --color-brand-green-dark: #6da84f;
+
+  --color-yellow-base: #fdd63b;
+  --color-yellow-light: #fee26e;
+  --color-yellow-dark: #e5bf1e;
+
+  /* Brand neutral scale (replaces slate) */
+  --color-n-50: #f8f9fb;
+  --color-n-100: #f0f2f5;
+  --color-n-200: #dfe3ea;
+  --color-n-300: #c4cad6;
+  --color-n-400: #a1aab8;
+  --color-n-500: #7d8799;
+  --color-n-600: #5c6577;
+  --color-n-700: #3f4858;
+  --color-n-800: #272e3b;
+  --color-n-900: #141922;
+  --color-n-950: #0a0d12;
+
+  /* Font family */
+  --font-sans: 'Goldman Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+}
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }

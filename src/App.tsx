@@ -10,6 +10,7 @@ import { NotationPanel } from "./components/NotationPanel";
 import { Dashboard } from "./components/Dashboard";
 import { PassphraseGate } from "./components/PassphraseGate";
 import { UserPicker } from "./components/UserPicker";
+import { UserMenu } from "./components/UserMenu";
 import { snapToMeasure, buildLoopRange } from "./utils/loop";
 import type { LoopRange } from "./utils/loop";
 import {
@@ -70,7 +71,7 @@ function App() {
     }).catch(() => setAuthState("passphrase"));
   }, []);
 
-  const playback = usePlayback(song);
+  const playback = usePlayback(song, visibleHands);
 
   const currentSectionIndex = useMemo(
     () => (sections.length > 0 ? findCurrentSection(sections, currentTime) : 0),
@@ -159,6 +160,24 @@ function App() {
     setLoop(null);
     setLoopAMeasure(null);
   }, [playback]);
+
+  const handleMenuDashboard = useCallback(() => {
+    setShowDashboard(true);
+  }, []);
+
+  const handleMenuSwitchUser = useCallback(() => {
+    setShowDashboard(false);
+    setSong(null);
+    setUserId(null);
+    setAuthState("user-picker");
+  }, []);
+
+  const handleMenuLogout = useCallback(() => {
+    setShowDashboard(false);
+    setSong(null);
+    setUserId(null);
+    setAuthState("passphrase");
+  }, []);
 
   const handleToggleHand = useCallback((hand: string) => {
     setVisibleHands((prev) => {
@@ -338,8 +357,8 @@ function App() {
   // Auth gates
   if (authState === "checking") {
     return (
-      <div className="h-screen bg-slate-900 flex items-center justify-center">
-        <div className="text-slate-500">Loading...</div>
+      <div className="h-screen bg-n-900 flex items-center justify-center">
+        <div className="text-n-500">Loading...</div>
       </div>
     );
   }
@@ -363,7 +382,7 @@ function App() {
 
   if (showDashboard) {
     return (
-      <div className="h-screen bg-slate-900">
+      <div className="h-screen bg-n-900">
         <Dashboard
           userId={userId!}
           onClose={() => setShowDashboard(false)}
@@ -386,14 +405,13 @@ function App() {
 
   if (!song) {
     return (
-      <div className="h-screen bg-slate-900 flex flex-col">
+      <div className="h-screen bg-n-900 flex flex-col">
         <div className="flex justify-end px-4 pt-3">
-          <button
-            onClick={() => setShowDashboard(true)}
-            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-sm"
-          >
-            Dashboard
-          </button>
+          <UserMenu
+            onDashboard={handleMenuDashboard}
+            onSwitchUser={handleMenuSwitchUser}
+            onLogout={handleMenuLogout}
+          />
         </div>
         <div className="flex-1">
           <FileLoader onFileLoad={handleFileLoad} />
@@ -403,7 +421,7 @@ function App() {
   }
 
   return (
-    <div className="h-screen bg-slate-900 flex flex-col">
+    <div className="h-screen bg-n-900 flex flex-col">
       <Controls
         isPlaying={isPlaying}
         songTitle={song.title}
@@ -426,6 +444,9 @@ function App() {
         onClearLoop={handleClearLoop}
         showSections={showSections}
         onToggleSections={() => setShowSections((p) => !p)}
+        onDashboard={handleMenuDashboard}
+        onSwitchUser={handleMenuSwitchUser}
+        onLogout={handleMenuLogout}
       />
       <NotationPanel
         song={song}
@@ -450,13 +471,13 @@ function App() {
                 <div className="flex gap-3 justify-center">
                   <button
                     onClick={handlePlay}
-                    className="bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-2 rounded font-medium"
+                    className="bg-purple-base hover:bg-purple-light text-white px-6 py-2 rounded font-medium"
                   >
                     Replay
                   </button>
                   <button
                     onClick={handleBack}
-                    className="bg-slate-700 hover:bg-slate-600 text-white px-6 py-2 rounded"
+                    className="bg-n-700 hover:bg-n-600 text-white px-6 py-2 rounded"
                   >
                     New Song
                   </button>

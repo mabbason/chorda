@@ -10,9 +10,9 @@ interface Props {
 }
 
 const MASTERY_COLORS: Record<string, string> = {
-  new: "bg-slate-700 text-slate-400",
-  practiced: "bg-amber-700 text-amber-200",
-  learned: "bg-green-700 text-green-200",
+  new: "bg-n-700 text-n-400",
+  practiced: "bg-yellow-dark text-yellow-light",
+  learned: "bg-brand-green-dark text-brand-green-light",
 };
 
 const MASTERY_LABELS: Record<string, string> = {
@@ -44,9 +44,9 @@ export function SectionsPanel({
   onMarkLearned,
 }: Props) {
   return (
-    <div className="w-52 bg-slate-800 border-l border-slate-700 flex flex-col overflow-hidden">
-      <div className="px-3 py-2 border-b border-slate-700">
-        <p className="text-xs text-amber-400 font-medium">
+    <div className="w-52 bg-n-800 border-l border-n-700 flex flex-col overflow-hidden">
+      <div className="px-3 py-2 border-b border-n-700">
+        <p className="text-xs text-yellow-base font-medium">
           {STEP_MESSAGES[guidedStep]}
         </p>
       </div>
@@ -59,13 +59,13 @@ export function SectionsPanel({
           return (
             <div
               key={i}
-              className={`px-3 py-2 border-b border-slate-700/50 cursor-pointer hover:bg-slate-700/50 ${
-                isCurrent ? "bg-slate-700/80 border-l-2 border-l-cyan-500" : ""
+              className={`px-3 py-2 border-b border-n-700/50 cursor-pointer hover:bg-n-700/50 ${
+                isCurrent ? "bg-n-700/80 border-l-2 border-l-purple-light" : ""
               }`}
               onClick={() => onJumpToSection(i)}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className={`text-xs font-medium ${isCurrent ? "text-white" : "text-slate-300"}`}>
+                <span className={`text-xs font-medium ${isCurrent ? "text-white" : "text-n-300"}`}>
                   Section {i + 1}
                 </span>
                 <span className={`text-[10px] px-1.5 py-0.5 rounded ${MASTERY_COLORS[prog.mastery]}`}>
@@ -73,27 +73,39 @@ export function SectionsPanel({
                 </span>
               </div>
 
-              <div className="text-[10px] text-slate-500">
-                m{section.startMeasure + 1}-{section.endMeasure + 1} &middot; {formatTime(prog.practiceTimeSec)}
-              </div>
+              <div className="flex items-center justify-between">
+                <div className="text-[10px] text-n-500">
+                  m{section.startMeasure + 1}-{section.endMeasure + 1} &middot; {formatTime(prog.practiceTimeSec)}
+                </div>
 
-              {isCurrent && prog.mastery !== "learned" && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onMarkLearned(i);
-                  }}
-                  className="mt-1 text-[10px] px-2 py-0.5 rounded bg-green-700 hover:bg-green-600 text-green-200"
-                >
-                  Mark Learned
-                </button>
-              )}
+                {prog.mastery === "learned" ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-brand-green-base shrink-0">
+                    <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.2" />
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                    <path d="M8 12l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                ) : isCurrent ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onMarkLearned(i);
+                    }}
+                    className="shrink-0 text-n-500 hover:text-brand-green-base transition-colors"
+                    title="Mark as Learned"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                      <path d="M8 12l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                ) : null}
+              </div>
             </div>
           );
         })}
       </div>
 
-      <div className="px-3 py-2 border-t border-slate-700 text-[10px] text-slate-500">
+      <div className="px-3 py-2 border-t border-n-700 text-[10px] text-n-500">
         {progress.filter((p) => p.mastery === "learned").length}/{sections.length} learned
       </div>
     </div>

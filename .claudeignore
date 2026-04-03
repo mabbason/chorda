@@ -1,0 +1,14 @@
+node_modules/
+dist/
+build/
+.next/
+*.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.git/
+coverage/
+.nyc_output/
+*.min.js
+*.min.css
+*.map

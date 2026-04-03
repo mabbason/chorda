@@ -36,10 +36,10 @@ export function AvatarPicker({ selected, onSelect }: Props) {
           key={key}
           type="button"
           onClick={() => onSelect(key)}
-          className={`w-12 h-12 rounded-lg text-2xl flex items-center justify-center transition-all ${
+          className={`w-12 h-12 rounded-full text-2xl flex items-center justify-center transition-all ${
             selected === key
-              ? "bg-cyan-600 ring-2 ring-cyan-400 scale-110"
-              : "bg-slate-700 hover:bg-slate-600"
+              ? "bg-purple-base ring-2 ring-purple-light scale-110"
+              : "bg-n-700 hover:bg-n-600"
           }`}
         >
           {AVATAR_MAP[key]}

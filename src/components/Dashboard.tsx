@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { API_BASE } from "../utils/song-api";
 import { fetchWithAuth, changePassphrase } from "../utils/auth";
 import type { SectionProgress } from "../engine/sections";
+import { UserMenu } from "./UserMenu";
 
 interface Props {
   userId: number;
@@ -34,9 +35,9 @@ function formatTime(sec: number): string {
 function ProgressBar({ value, max }: { value: number; max: number }) {
   const pct = max > 0 ? Math.round((value / max) * 100) : 0;
   return (
-    <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
+    <div className="h-1.5 bg-n-700 rounded-full overflow-hidden">
       <div
-        className="h-full bg-cyan-500 rounded-full transition-all"
+        className="h-full bg-purple-light rounded-full transition-all"
         style={{ width: `${pct}%` }}
       />
     </div>
@@ -121,73 +122,65 @@ export function Dashboard({ userId, onClose, onSwitchUser, onLogout }: Props) {
   }, [userId]);
 
   return (
-    <div className="h-full flex flex-col bg-slate-900 text-white">
-      <div className="flex items-center justify-between px-4 py-3 bg-slate-800 border-b border-slate-700">
+    <div className="h-full flex flex-col bg-n-900 text-white">
+      <div className="flex items-center justify-between px-4 py-3 bg-n-800 border-b border-n-700">
         <h2 className="text-lg font-bold">Progress Dashboard</h2>
         <div className="flex items-center gap-2">
           <button
-            onClick={onSwitchUser}
-            className="text-slate-400 hover:text-white text-sm px-2 py-1"
-          >
-            Switch User
-          </button>
-          <button
-            onClick={onLogout}
-            className="text-slate-400 hover:text-white text-sm px-2 py-1"
-          >
-            Logout
-          </button>
-          <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white text-sm px-2 py-1"
+            className="text-n-400 hover:text-white text-sm px-2 py-1"
           >
             &times; Close
           </button>
+          <UserMenu
+            onSwitchUser={onSwitchUser}
+            onLogout={onLogout}
+          />
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-4">
         {loading ? (
-          <div className="text-center text-slate-500 py-12">Loading...</div>
+          <div className="text-center text-n-500 py-12">Loading...</div>
         ) : (
           <>
             <div className="grid grid-cols-3 gap-4 mb-6">
-              <div className="bg-slate-800 rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-cyan-400">
+              <div className="bg-n-800 rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-purple-light">
                   {formatTime(totalTime)}
                 </div>
-                <div className="text-slate-500 text-xs mt-1">Total Practice</div>
+                <div className="text-n-500 text-xs mt-1">Total Practice</div>
               </div>
-              <div className="bg-slate-800 rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-green-400">{songsStarted}</div>
-                <div className="text-slate-500 text-xs mt-1">Songs Started</div>
+              <div className="bg-n-800 rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-brand-green-light">{songsStarted}</div>
+                <div className="text-n-500 text-xs mt-1">Songs Started</div>
               </div>
-              <div className="bg-slate-800 rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-amber-400">{songsCompleted}</div>
-                <div className="text-slate-500 text-xs mt-1">Songs Mastered</div>
+              <div className="bg-n-800 rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-yellow-light">{songsCompleted}</div>
+                <div className="text-n-500 text-xs mt-1">Songs Mastered</div>
               </div>
             </div>
 
             <div>
-              <h3 className="text-sm font-medium text-slate-400 mb-3">Song Progress</h3>
+              <h3 className="text-sm font-medium text-n-400 mb-3">Song Progress</h3>
               {stats.length === 0 && (
-                <div className="text-center text-slate-600 py-8 text-sm">
+                <div className="text-center text-n-600 py-8 text-sm">
                   No songs practiced yet. Pick a song to get started!
                 </div>
               )}
               <div className="grid gap-2">
                 {stats.map((s) => (
-                  <div key={s.songTitle} className="bg-slate-800 rounded-lg px-4 py-3">
+                  <div key={s.songTitle} className="bg-n-800 rounded-lg px-4 py-3">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-white text-sm font-medium truncate">
                         {s.songTitle}
                       </span>
-                      <span className="text-slate-500 text-xs shrink-0 ml-2">
+                      <span className="text-n-500 text-xs shrink-0 ml-2">
                         {formatTime(s.totalPracticeTimeSec)}
                       </span>
                     </div>
                     <ProgressBar value={s.sectionsLearned} max={s.totalSections} />
-                    <div className="text-slate-500 text-[10px] mt-1">
+                    <div className="text-n-500 text-[10px] mt-1">
                       {s.sectionsLearned}/{s.totalSections} sections learned
                     </div>
                   </div>
@@ -195,45 +188,45 @@ export function Dashboard({ userId, onClose, onSwitchUser, onLogout }: Props) {
               </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-slate-700">
+            <div className="mt-6 pt-4 border-t border-n-700">
               {!showPassphraseForm ? (
                 <button
                   onClick={() => setShowPassphraseForm(true)}
-                  className="text-slate-500 hover:text-slate-300 text-xs"
+                  className="text-n-500 hover:text-n-300 text-xs"
                 >
                   Change passphrase
                 </button>
               ) : (
                 <form onSubmit={handleChangePassphrase} className="space-y-2">
-                  <h4 className="text-sm font-medium text-slate-400">Change Passphrase</h4>
+                  <h4 className="text-sm font-medium text-n-400">Change Passphrase</h4>
                   <input
                     type="password"
                     placeholder="Current passphrase"
                     value={currentPw}
                     onChange={(e) => setCurrentPw(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-n-800 border border-n-600 rounded px-3 py-1.5 text-sm text-white placeholder-n-500 focus:outline-none focus:border-purple-light"
                   />
                   <input
                     type="password"
                     placeholder="New passphrase"
                     value={newPw}
                     onChange={(e) => setNewPw(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-1.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
+                    className="w-full bg-n-800 border border-n-600 rounded px-3 py-1.5 text-sm text-white placeholder-n-500 focus:outline-none focus:border-purple-light"
                   />
-                  {pwError && <p className="text-red-400 text-xs">{pwError}</p>}
-                  {pwSuccess && <p className="text-green-400 text-xs">Passphrase updated</p>}
+                  {pwError && <p className="text-pink-base text-xs">{pwError}</p>}
+                  {pwSuccess && <p className="text-brand-green-base text-xs">Passphrase updated</p>}
                   <div className="flex gap-2">
                     <button
                       type="submit"
                       disabled={pwSubmitting || !currentPw || !newPw}
-                      className="bg-cyan-600 hover:bg-cyan-500 disabled:opacity-40 text-white text-xs px-3 py-1.5 rounded"
+                      className="bg-purple-base hover:bg-purple-light disabled:opacity-40 text-white text-xs px-3 py-1.5 rounded"
                     >
                       {pwSubmitting ? "Saving..." : "Save"}
                     </button>
                     <button
                       type="button"
                       onClick={() => { setShowPassphraseForm(false); setPwError(""); setPwSuccess(false); }}
-                      className="text-slate-400 hover:text-white text-xs px-3 py-1.5"
+                      className="text-n-400 hover:text-white text-xs px-3 py-1.5"
                     >
                       Cancel
                     </button>

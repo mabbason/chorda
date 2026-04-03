@@ -68,7 +68,7 @@ export function WaterfallCanvas({ song, getCurrentTime, getState, visibleHands, 
     <canvas
       ref={canvasRef}
       className="w-full h-full block"
-      style={{ background: "#0f172a" }}
+      style={{ background: "#141922" }}
     />
   );
 }

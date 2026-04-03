@@ -5,11 +5,12 @@ const KEYBOARD_HEIGHT = 112;
 const VIEWPORT_AHEAD_SEC = 4;
 const VIEWPORT_BEHIND_SEC = 0.5; // less behind = notes land closer to keyboard
 
-const RIGHT_HAND_COLOR = "#06b6d4";
-const RIGHT_HAND_ACTIVE = "#22d3ee";
-const LEFT_HAND_COLOR = "#22c55e";
-const LEFT_HAND_ACTIVE = "#4ade80";
-const UNKNOWN_HAND_COLOR = "#a855f7";
+// Keep in sync with brand palette in src/index.css @theme
+const RIGHT_HAND_COLOR = "#9768f8";   // purple-base
+const RIGHT_HAND_ACTIVE = "#b48ffa";  // purple-light
+const LEFT_HAND_COLOR = "#8ec56f";    // brand-green-base
+const LEFT_HAND_ACTIVE = "#aad494";   // brand-green-light
+const UNKNOWN_HAND_COLOR = "#fb396a"; // pink-base
 
 // Computed per-song: the actual MIDI range to display
 interface KeyboardRange {
@@ -102,9 +103,9 @@ function drawKeyboard(
       // Draw white key base first
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(x, keyboardY, whiteKeyWidth - 1, KEYBOARD_HEIGHT);
-      // Subtle color wash over entire key
+      // Color wash over entire key
       ctx.fillStyle = handColor;
-      ctx.globalAlpha = 0.15;
+      ctx.globalAlpha = 0.55;
       ctx.fillRect(x, keyboardY, whiteKeyWidth - 1, KEYBOARD_HEIGHT);
       ctx.globalAlpha = 1.0;
     } else {
@@ -112,13 +113,13 @@ function drawKeyboard(
       ctx.fillRect(x, keyboardY, whiteKeyWidth - 1, KEYBOARD_HEIGHT);
     }
 
-    ctx.strokeStyle = "#d1d5db";
+    ctx.strokeStyle = "#dfe3ea";
     ctx.lineWidth = 0.5;
     ctx.strokeRect(x, keyboardY, whiteKeyWidth - 1, KEYBOARD_HEIGHT);
 
     // Draw note name on wider keys
     if (whiteKeyWidth > 18) {
-      ctx.fillStyle = isActive ? "#0f172a" : "#94a3b8";
+      ctx.fillStyle = isActive ? "#0a0d12" : "#a1aab8";
       ctx.font = `${Math.min(10, whiteKeyWidth * 0.4)}px system-ui`;
       ctx.textAlign = "center";
       const names = ["C", "", "D", "", "E", "F", "", "G", "", "A", "", "B"];
@@ -144,21 +145,21 @@ function drawKeyboard(
     if (isActive) {
       const handColor = activeNotes.get(m)!;
       // Draw dark key base
-      ctx.fillStyle = "#334155";
+      ctx.fillStyle = "#3f4858";
       ctx.fillRect(x, keyboardY, blackKeyWidth, blackKeyHeight);
-      // Subtle color wash
+      // Color wash
       ctx.fillStyle = handColor;
-      ctx.globalAlpha = 0.3;
+      ctx.globalAlpha = 0.65;
       ctx.fillRect(x, keyboardY, blackKeyWidth, blackKeyHeight);
       ctx.globalAlpha = 1.0;
     } else {
-      ctx.fillStyle = "#1e293b";
+      ctx.fillStyle = "#272e3b";
       ctx.fillRect(x, keyboardY, blackKeyWidth, blackKeyHeight);
     }
   }
 
   // Top border of keyboard
-  ctx.strokeStyle = "#475569";
+  ctx.strokeStyle = "#5c6577";
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(0, keyboardY);
@@ -169,9 +170,9 @@ function drawKeyboard(
 function drawPlayLine(ctx: CanvasRenderingContext2D, width: number, height: number) {
   const y = height - KEYBOARD_HEIGHT;
   // Glow effect
-  ctx.shadowColor = "#f59e0b";
+  ctx.shadowColor = "#fdd63b";
   ctx.shadowBlur = 6;
-  ctx.strokeStyle = "#f59e0b";
+  ctx.strokeStyle = "#fdd63b";
   ctx.lineWidth = 2;
   ctx.setLineDash([]);
   ctx.beginPath();
@@ -240,7 +241,7 @@ function drawLoopRegion(
   }
 
   // Draw loop boundary lines
-  ctx.strokeStyle = "#f59e0b";
+  ctx.strokeStyle = "#fdd63b";
   ctx.lineWidth = 2;
   ctx.setLineDash([6, 3]);
 
@@ -279,7 +280,7 @@ export function render(
   const range = cachedRange;
 
   // Clear
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = "#141922";
   ctx.fillRect(0, 0, width, height);
 
   const waterfallHeight = height - KEYBOARD_HEIGHT;
