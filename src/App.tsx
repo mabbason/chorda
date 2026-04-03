@@ -8,6 +8,8 @@ import { Controls } from "./components/Controls";
 import { SectionsPanel } from "./components/SectionsPanel";
 import { NotationPanel } from "./components/NotationPanel";
 import { Dashboard } from "./components/Dashboard";
+import { PassphraseGate } from "./components/PassphraseGate";
+import { UserPicker } from "./components/UserPicker";
 import { snapToMeasure, buildLoopRange } from "./utils/loop";
 import type { LoopRange } from "./utils/loop";
 import {
@@ -20,9 +22,14 @@ import {
   suggestNextStep,
 } from "./engine/sections";
 import type { Section, SectionProgress } from "./engine/sections";
-import { loadProgress, saveProgress } from "./utils/storage";
+import { loadProgress, saveProgress, loadAllProgress } from "./utils/storage";
+import { checkAuth, setSessionExpiredHandler } from "./utils/auth";
+
+type AuthState = "checking" | "passphrase" | "user-picker" | "ready";
 
 function App() {
+  const [authState, setAuthState] = useState<AuthState>("checking");
+  const [userId, setUserId] = useState<number | null>(null);
   const [song, setSong] = useState<Song | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
@@ -41,6 +48,27 @@ function App() {
   const rafRef = useRef<number>(0);
   const lastSectionRef = useRef<number>(-1);
   const practiceTimeRef = useRef<number>(0);
+
+  // Check auth on mount
+  useEffect(() => {
+    setSessionExpiredHandler(() => {
+      setAuthState("passphrase");
+      setUserId(null);
+      setSong(null);
+    });
+
+    checkAuth().then(async (status) => {
+      if (!status.authenticated) {
+        setAuthState("passphrase");
+      } else if (!status.userId) {
+        setAuthState("user-picker");
+      } else {
+        setUserId(status.userId);
+        await loadAllProgress(status.userId);
+        setAuthState("ready");
+      }
+    }).catch(() => setAuthState("passphrase"));
+  }, []);
 
   const playback = usePlayback(song);
 
@@ -195,11 +223,11 @@ function App() {
       setSectionProgress((prev) => {
         const next = [...prev];
         next[sectionIndex] = markSectionLearned(next[sectionIndex]);
-        if (song) saveProgress(song.title, next);
+        if (song && userId) saveProgress(song.title, next, userId, true);
         return next;
       });
     },
-    [song]
+    [song, userId]
   );
 
   // Keyboard shortcuts
@@ -269,7 +297,7 @@ function App() {
             setSectionProgress((prev) => {
               const next = [...prev];
               next[lastSectionRef.current] = markPlayed(next[lastSectionRef.current]);
-              if (song) saveProgress(song.title, next);
+              if (song && userId) saveProgress(song.title, next, userId);
               return next;
             });
           }
@@ -283,7 +311,7 @@ function App() {
             setSectionProgress((prev) => {
               const next = [...prev];
               next[secIdx] = addPracticeTime(next[secIdx], accumulated);
-              if (song) saveProgress(song.title, next);
+              if (song && userId) saveProgress(song.title, next, userId);
               return next;
             });
           }
@@ -307,10 +335,51 @@ function App() {
     return () => cancelAnimationFrame(rafRef.current);
   }, [song, playback, isPlaying, loop, sections]);
 
+  // Auth gates
+  if (authState === "checking") {
+    return (
+      <div className="h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-slate-500">Loading...</div>
+      </div>
+    );
+  }
+
+  if (authState === "passphrase") {
+    return <PassphraseGate onSuccess={() => setAuthState("user-picker")} />;
+  }
+
+  if (authState === "user-picker") {
+    return (
+      <UserPicker
+        onUserSelected={async (id) => {
+          setUserId(id);
+          await loadAllProgress(id);
+          setAuthState("ready");
+        }}
+        onLogout={() => setAuthState("passphrase")}
+      />
+    );
+  }
+
   if (showDashboard) {
     return (
       <div className="h-screen bg-slate-900">
-        <Dashboard onClose={() => setShowDashboard(false)} />
+        <Dashboard
+          userId={userId!}
+          onClose={() => setShowDashboard(false)}
+          onSwitchUser={() => {
+            setShowDashboard(false);
+            setSong(null);
+            setUserId(null);
+            setAuthState("user-picker");
+          }}
+          onLogout={() => {
+            setShowDashboard(false);
+            setSong(null);
+            setUserId(null);
+            setAuthState("passphrase");
+          }}
+        />
       </div>
     );
   }

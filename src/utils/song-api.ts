@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_SONG_API_URL || (
+export const API_BASE = import.meta.env.VITE_SONG_API_URL || (
   import.meta.env.DEV ? "http://localhost:3001" : ""
 );
 
@@ -13,6 +13,10 @@ export interface SongResult {
   tempo_bpm: number;
 }
 
+import { fetchWithAuth } from "./auth";
+
+const opts: RequestInit = { credentials: "include" };
+
 export async function searchSongs(
   query?: string,
   options?: { genre?: string; difficulty?: number; limit?: number }
@@ -23,19 +27,19 @@ export async function searchSongs(
   if (options?.difficulty) params.set("difficulty", String(options.difficulty));
   params.set("limit", String(options?.limit ?? 20));
 
-  const res = await fetch(`${API_BASE}/api/songs/search?${params}`);
+  const res = await fetch(`${API_BASE}/api/songs/search?${params}`, opts);
   if (!res.ok) return [];
   return res.json();
 }
 
 export async function fetchSongMidi(id: string): Promise<ArrayBuffer> {
-  const res = await fetch(`${API_BASE}/api/songs/${encodeURIComponent(id)}/midi`);
+  const res = await fetchWithAuth(`${API_BASE}/api/songs/${encodeURIComponent(id)}/midi`);
   if (!res.ok) throw new Error("Failed to fetch MIDI");
   return res.arrayBuffer();
 }
 
 export async function fetchGenres(): Promise<{ genre: string; count: number }[]> {
-  const res = await fetch(`${API_BASE}/api/songs/genres`);
+  const res = await fetch(`${API_BASE}/api/songs/genres`, opts);
   if (!res.ok) return [];
   return res.json();
 }

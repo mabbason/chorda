@@ -1,15 +1,26 @@
 import { useState, useEffect } from "react";
-import {
-  getProfiles,
-  createProfile,
-  getActiveProfile,
-  setActiveProfile,
-  getProfileData,
-} from "../utils/profiles";
-import type { ProfileData } from "../utils/profiles";
+import { API_BASE } from "../utils/song-api";
+import { fetchWithAuth } from "../utils/auth";
+import type { SectionProgress } from "../engine/sections";
 
 interface Props {
+  userId: number;
   onClose: () => void;
+  onSwitchUser: () => void;
+  onLogout: () => void;
+}
+
+interface ProgressRow {
+  song_title: string;
+  section_progress: string;
+  updated_at: string;
+}
+
+interface SongStats {
+  songTitle: string;
+  totalPracticeTimeSec: number;
+  sectionsLearned: number;
+  totalSections: number;
 }
 
 function formatTime(sec: number): string {
@@ -32,143 +43,112 @@ function ProgressBar({ value, max }: { value: number; max: number }) {
   );
 }
 
-export function Dashboard({ onClose }: Props) {
-  const [profiles, setProfiles] = useState(getProfiles());
-  const [active, setActive] = useState(getActiveProfile());
-  const [data, setData] = useState<ProfileData | null>(null);
-  const [newName, setNewName] = useState("");
-  const [showCreate, setShowCreate] = useState(false);
+export function Dashboard({ userId, onClose, onSwitchUser, onLogout }: Props) {
+  const [stats, setStats] = useState<SongStats[]>([]);
+  const [totalTime, setTotalTime] = useState(0);
+  const [songsStarted, setSongsStarted] = useState(0);
+  const [songsCompleted, setSongsCompleted] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (active) {
-      setData(getProfileData(active));
-    }
-  }, [active]);
+    fetchWithAuth(`${API_BASE}/api/users/${userId}/progress`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((rows: ProgressRow[]) => {
+        const songStats: SongStats[] = [];
+        let total = 0;
+        let started = 0;
+        let completed = 0;
 
-  const handleCreate = () => {
-    if (!newName.trim()) return;
-    createProfile(newName.trim());
-    setProfiles(getProfiles());
-    setActive(newName.trim());
-    setNewName("");
-    setShowCreate(false);
-  };
+        for (const row of rows) {
+          try {
+            const progress: SectionProgress[] = JSON.parse(row.section_progress);
+            const practiceTime = progress.reduce((sum, s) => sum + (s.practiceTimeSec || 0), 0);
+            const learned = progress.filter((s) => s.mastery === "learned").length;
 
-  const handleSwitch = (name: string) => {
-    setActiveProfile(name);
-    setActive(name);
-  };
+            if (practiceTime > 0 || learned > 0) {
+              songStats.push({
+                songTitle: row.song_title,
+                totalPracticeTimeSec: Math.round(practiceTime),
+                sectionsLearned: learned,
+                totalSections: progress.length,
+              });
+              total += practiceTime;
+              started++;
+              if (learned === progress.length) completed++;
+            }
+          } catch {
+            continue;
+          }
+        }
+
+        songStats.sort((a, b) => b.totalPracticeTimeSec - a.totalPracticeTimeSec);
+        setStats(songStats);
+        setTotalTime(Math.round(total));
+        setSongsStarted(started);
+        setSongsCompleted(completed);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [userId]);
 
   return (
     <div className="h-full flex flex-col bg-slate-900 text-white">
-      {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 bg-slate-800 border-b border-slate-700">
         <h2 className="text-lg font-bold">Progress Dashboard</h2>
-        <button
-          onClick={onClose}
-          className="text-slate-400 hover:text-white text-sm px-2 py-1"
-        >
-          &times; Close
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onSwitchUser}
+            className="text-slate-400 hover:text-white text-sm px-2 py-1"
+          >
+            Switch User
+          </button>
+          <button
+            onClick={onLogout}
+            className="text-slate-400 hover:text-white text-sm px-2 py-1"
+          >
+            Logout
+          </button>
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-white text-sm px-2 py-1"
+          >
+            &times; Close
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-4">
-        {/* Profile selector */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-slate-400 text-xs">Profile:</span>
-            {profiles.map((p) => (
-              <button
-                key={p.name}
-                onClick={() => handleSwitch(p.name)}
-                className={`px-3 py-1 rounded text-sm ${
-                  active === p.name
-                    ? "bg-cyan-600 text-white"
-                    : "bg-slate-700 text-slate-300 hover:bg-slate-600"
-                }`}
-              >
-                {p.name}
-              </button>
-            ))}
-            <button
-              onClick={() => setShowCreate(true)}
-              className="px-2 py-1 rounded text-sm bg-slate-700 text-slate-400 hover:bg-slate-600"
-            >
-              + New
-            </button>
-          </div>
-
-          {showCreate && (
-            <div className="flex items-center gap-2 mt-2">
-              <input
-                type="text"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-                placeholder="Name..."
-                className="px-3 py-1.5 bg-slate-800 border border-slate-600 rounded text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500"
-                autoFocus
-              />
-              <button
-                onClick={handleCreate}
-                className="px-3 py-1.5 bg-cyan-600 text-white rounded text-sm"
-              >
-                Create
-              </button>
-              <button
-                onClick={() => setShowCreate(false)}
-                className="text-slate-400 text-sm"
-              >
-                Cancel
-              </button>
-            </div>
-          )}
-        </div>
-
-        {!active && (
-          <div className="text-center text-slate-500 py-12">
-            Create a profile to track your progress
-          </div>
-        )}
-
-        {data && (
+        {loading ? (
+          <div className="text-center text-slate-500 py-12">Loading...</div>
+        ) : (
           <>
-            {/* Stats overview */}
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div className="bg-slate-800 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-cyan-400">
-                  {formatTime(data.totalPracticeTimeSec)}
+                  {formatTime(totalTime)}
                 </div>
                 <div className="text-slate-500 text-xs mt-1">Total Practice</div>
               </div>
               <div className="bg-slate-800 rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-green-400">
-                  {data.songsStarted}
-                </div>
+                <div className="text-2xl font-bold text-green-400">{songsStarted}</div>
                 <div className="text-slate-500 text-xs mt-1">Songs Started</div>
               </div>
               <div className="bg-slate-800 rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-amber-400">
-                  {data.songsCompleted}
-                </div>
+                <div className="text-2xl font-bold text-amber-400">{songsCompleted}</div>
                 <div className="text-slate-500 text-xs mt-1">Songs Mastered</div>
               </div>
             </div>
 
-            {/* Song progress list */}
             <div>
               <h3 className="text-sm font-medium text-slate-400 mb-3">Song Progress</h3>
-              {data.songStats.length === 0 && (
+              {stats.length === 0 && (
                 <div className="text-center text-slate-600 py-8 text-sm">
                   No songs practiced yet. Pick a song to get started!
                 </div>
               )}
               <div className="grid gap-2">
-                {data.songStats.map((s) => (
-                  <div
-                    key={s.songTitle}
-                    className="bg-slate-800 rounded-lg px-4 py-3"
-                  >
+                {stats.map((s) => (
+                  <div key={s.songTitle} className="bg-slate-800 rounded-lg px-4 py-3">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-white text-sm font-medium truncate">
                         {s.songTitle}
