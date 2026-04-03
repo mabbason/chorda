@@ -27,6 +27,9 @@ src/
   main.tsx
 public/
   songs/          # Pre-bundled MIDI files
+  favicons/       # Favicon set (ico, png 16/32/192/512, apple-touch)
+  fonts/          # Goldman Sans font files
+  logos/          # Brand logos (SVG + PNG)
 ```
 
 ## Commands
@@ -57,6 +60,7 @@ Songs are parsed into a normalized `Song` model (notes, timing, hand assignments
 - **Viewport culling:** Only draw notes within visible time window (current +/- ~5 seconds)
 - **Tone.Draw.schedule()** for keyboard highlight sync (tighter than rAF polling)
 - **Hand detection:** Filter to piano tracks (programs 0-7), remove drums (channel 9), then apply track-order or pitch-split heuristic
+- **Hand-filtered audio:** `scheduleNotes()` filters tracks by `visibleHands` set; toggling hands reschedules Tone.Transport while preserving playback position via ref
 
 ## Design Doc
 
